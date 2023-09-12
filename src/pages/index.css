@@ -41,3 +41,11 @@
 @import url(../blocks/element/__counter/element__counter.css);
 @import url(../blocks/element/__caption/element__caption.css);
 @import url(../blocks/element/__like-counter/element__like-counter.css);
+@import url(../blocks/auth/auth.css);
+@import url(../blocks/auth/__form/auth__form.css);
+@import url(../blocks/auth/__btn/auth__btn.css);
+@import url(../blocks/auth/__welcome/auth__welcome.css);
+@import url(../blocks/auth/__input/auth__input.css);
+@import url(../blocks/auth/__signin/auth__signin.css);
+@import url(../blocks/auth/__signin/_link/auth__signin_link.css);
+@import url(../blocks/auth/__signin/_text/auth__signin_text.css);

@@ -127,12 +127,10 @@ function App() {
     }
 
     function onRegister() {
-        console.log('окно успеха');
         setIsToolTipSuccessOpen(true);
     }
 
     function onError() {
-        console.log('окно ошибки')
         setIsToolTipFailOpen(true);
     }
 

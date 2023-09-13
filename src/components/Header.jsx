@@ -20,7 +20,7 @@ function Header({ email }) {
           <header className="header">
             <img className="header__logo" src={logo} alt="Логотип сайта." />
             <div className="header__container">
-              <p className='header__email'>{email}email</p>
+              <p className='header__email'>{email}</p>
               <NavLink to="/sign-in" className="header__btn" onClick={handleExit}>Выйти</NavLink>
             </div>
           </header>

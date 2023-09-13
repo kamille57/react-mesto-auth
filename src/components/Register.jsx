@@ -1,7 +1,11 @@
 import React from 'react';
 import { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+
 
 function Register({ onRegister }) {
+
+    const navigate = useNavigate();
 
     const [userData, setUserData] = useState({
         email: '',
@@ -14,6 +18,10 @@ function Register({ onRegister }) {
             ...userData,
             [name]: value
         })
+    }
+
+    function handleEnter() {
+        navigate('/sign-in');
     }
 
     function handleSubmit(e) {
@@ -34,7 +42,8 @@ function Register({ onRegister }) {
 
             </form>
             <div className="auth__signin">
-                <p className="auth__signin_text">Уже зарегистрированы? Войти</p>
+                <p className="auth__signin_text">Уже зарегистрированы?</p>
+                <NavLink to="/sign-in" className="auth__signin_link" onClick={handleEnter}>Войти</NavLink>
             </div>
         </div>
     )

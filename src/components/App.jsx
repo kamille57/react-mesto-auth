@@ -16,6 +16,7 @@ import * as auth from '../utils/Auth';
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
+    const [email, setEmail] = useState('');
     const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
     const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
     const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
@@ -131,7 +132,8 @@ function App() {
         const token = localStorage.getItem('token');
         if (token) {
             auth.checkToken(token)
-                .then(() => {
+                .then((res) => {
+                    setEmail(res.email);
                     setLoggedIn(true);
                     navigate("/");
                 })
@@ -139,10 +141,11 @@ function App() {
         }
     }
 
-    function handleLogin(password, email) {
-        auth.authorize(password, email)
+    function handleLogin(email, password) {
+        auth.authorize(email, password)
             .then(res => {
                 localStorage.setItem('token', res.token)
+                setEmail(email);
                 setLoggedIn(true);
                 navigate("/")
             })
@@ -152,9 +155,11 @@ function App() {
             });
     }
 
-    function handleRegister(password, email) {
-        auth.register(password, email)
+    function handleRegister(email, password) {
+        auth.register(email, password)
             .then(() => {
+                setEmail(email);
+                setLoggedIn(false);
                 navigate("/sign-in");
                 onRegister();
             })
@@ -168,7 +173,8 @@ function App() {
         <CurrentUserContext.Provider value={currentUser}>
             <div className="page">
                 <Header
-                //email={email} 
+                    loggedIn={loggedIn}
+                    email={email}
                 />
                 <Routes>
                     <Route

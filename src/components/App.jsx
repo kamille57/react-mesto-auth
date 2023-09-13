@@ -26,6 +26,10 @@ function App() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        checkContent();
+    }, []);
+
+    useEffect(() => {
         Promise.all([api.getUserInfo(), api.getInitialCards()])
             .then(([userData, cardsData]) => {
                 setCurrentUser(userData);
@@ -124,9 +128,9 @@ function App() {
     }
 
     function checkContent() {
-        const jwt = localStorage.getItem('jwt');
-        if (jwt) {
-            auth.checkToken(jwt)
+        const token = localStorage.getItem('token');
+        if (token) {
+            auth.checkToken(token)
                 .then(() => {
                     setLoggedIn(true);
                     navigate("/");
@@ -135,14 +139,10 @@ function App() {
         }
     }
 
-    useEffect(() => {
-        checkContent();
-    }, []);
-
     function handleLogin(password, email) {
         auth.authorize(password, email)
             .then(res => {
-                localStorage.setItem('jwt', res.jwt)
+                localStorage.setItem('token', res.token)
                 setLoggedIn(true);
                 navigate("/")
             })

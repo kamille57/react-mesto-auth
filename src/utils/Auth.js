@@ -31,13 +31,13 @@ export const authorize = (email, password) => {
     .then(response => checkResponse(response));
 };
 
-export const checkToken = (jwt) => {
+export const checkToken = (token) => {
   return fetch(`${BASE_URL}/users/me`, {
     method: 'GET',
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${ jwt }` 
-    } 
-  }) 
-    .then(response => checkResponse(response)); 
+      "Authorization": `Bearer ${token}` // Add backticks (`) and "Bearer" prefix
+    }
+  })
+    .then(response => checkResponse(response));
 };

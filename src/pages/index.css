@@ -52,3 +52,5 @@
 @import url(../blocks/auth/__signin/auth__signin.css);
 @import url(../blocks/auth/__signin/_link/auth__signin_link.css);
 @import url(../blocks/auth/__signin/_text/auth__signin_text.css);
+@import url(../blocks/tooltips/tooltips.css);
+@import url(../blocks/tooltips/__img/tooltips__img.css);

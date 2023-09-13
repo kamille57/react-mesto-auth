@@ -12,12 +12,16 @@ import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import ProtectedRoute from "./ProtectedRoute";
+import ToolTipSuccess from "./ToolTipSuccess";
+import ToolTipFail from "./ToolTipFail";
 import * as auth from '../utils/Auth';
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [email, setEmail] = useState('');
     const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
+    const [isToolTipSuccessOpen, setIsToolTipSuccessOpen] = useState(false);
+    const [isToolTipFailOpen, setIsToolTipFailOpen] = useState(false);
     const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
     const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState({ name: "", link: "" });
@@ -40,6 +44,8 @@ function App() {
     }, []);
 
     function closeAllPopups() {
+        setIsToolTipSuccessOpen(false);
+        setIsToolTipFailOpen(false);
         setIsEditProfilePopupOpen(false);
         setIsAddPlacePopupOpen(false);
         setIsEditAvatarPopupOpen(false);
@@ -122,10 +128,12 @@ function App() {
 
     function onRegister() {
         console.log('окно успеха');
+        setIsToolTipSuccessOpen(true);
     }
 
     function onError() {
         console.log('окно ошибки')
+        setIsToolTipFailOpen(true);
     }
 
     function checkContent() {
@@ -203,7 +211,14 @@ function App() {
                     />
                 </Routes>
                 {loggedIn && <Footer />}
-
+                <ToolTipSuccess
+                    isOpen={isToolTipSuccessOpen}
+                    onClose={closeAllPopups}
+                />
+                 <ToolTipFail
+                    isOpen={isToolTipFailOpen}
+                    onClose={closeAllPopups}
+                />
                 <EditProfilePopup
                     isOpen={isEditProfilePopupOpen}
                     onClose={closeAllPopups}
@@ -214,7 +229,6 @@ function App() {
                     onClose={closeAllPopups}
                     onUpdateAvatar={handleUpdateAvatar}
                 />
-
                 <AddPlacePopup
                     isOpen={isAddPlacePopupOpen}
                     onClose={closeAllPopups}

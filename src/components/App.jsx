@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Login from "./Login";
 import Register from "./Register";
 import Header from "./Header";
@@ -8,14 +8,14 @@ import Footer from "./Footer";
 import ImagePopup from "./ImagePopup";
 import CurrentUserContext from "../contexts/CurrentUserContext";
 import Api from "../utils/Api";
-//import Auth from "../utils/Auth"
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
-import ProtectedRoute from "./ProtectedRoute"
+import ProtectedRoute from "./ProtectedRoute";
+import * as auth from '../utils/Auth';
 
 function App() {
-    const [loggedIn, setLoggedIn] = useState(true);
+    const [loggedIn, setLoggedIn] = useState(false);
     const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
     const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
     const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
@@ -23,6 +23,7 @@ function App() {
     const [currentUser, setCurrentUser] = useState({});
     const [cards, setCards] = useState([]);
     const api = new Api();
+    const navigate = useNavigate();
 
     useEffect(() => {
         Promise.all([api.getUserInfo(), api.getInitialCards()])
@@ -59,7 +60,8 @@ function App() {
     function handleCardLike(card) {
         const isLiked = card.likes.some((i) => i._id === currentUser._id);
 
-        api.changeLikeCardStatus(card._id, !isLiked)
+        api
+            .changeLikeCardStatus(card._id, !isLiked)
             .then((newCard) => {
                 setCards((state) =>
                     state.map((c) => (c._id === card._id ? newCard : c))
@@ -69,78 +71,130 @@ function App() {
     }
 
     function handleCardDelete(card) {
-        api.deleteCard(card._id)
+        api
+            .deleteCard(card._id)
             .then(() => {
-                setCards(state => state.filter(c => c._id !== card._id));
+                setCards((state) => state.filter((c) => c._id !== card._id));
             })
             .catch(console.error);
     }
 
     function handleUpdateUser(data) {
-        api.setUserInfo(data)
-            .then(updatedUserData => {
+        api
+            .setUserInfo(data)
+            .then((updatedUserData) => {
                 setCurrentUser(updatedUserData);
                 closeAllPopups(); // Закрываем попап после успешного обновления данных пользователя
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error(error);
             });
     }
 
     function handleUpdateAvatar(avatar) {
-        api.updateAvatar(avatar)
-            .then(updatedUser => {
+        api
+            .updateAvatar(avatar)
+            .then((updatedUser) => {
                 setCurrentUser(updatedUser);
                 closeAllPopups(); // Закрываем попап после успешного обновления аватара пользователя
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error(error);
             });
     }
 
     function handleAddPlaceSubmit(card) {
-        api.addCard(card)
-            .then(createdCard => {
-                setCards(prevCards => [createdCard, ...prevCards]);
+        api
+            .addCard(card)
+            .then((createdCard) => {
+                setCards((prevCards) => [createdCard, ...prevCards]);
                 closeAllPopups(); // Закрываем попап после успешного добавления карточки
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error(error);
+            });
+    }
+
+    function onRegister() {
+        console.log('окно успеха');
+    }
+
+    function onError() {
+        console.log('окно ошибки')
+    }
+
+    function checkContent() {
+        const jwt = localStorage.getItem('jwt');
+        if (jwt) {
+            auth.checkToken(jwt)
+                .then(() => {
+                    setLoggedIn(true);
+                    navigate("/");
+                })
+                .catch(err => console.log(err));
+        }
+    }
+
+    useEffect(() => {
+        checkContent();
+    }, []);
+
+    function handleLogin(password, email) {
+        auth.authorize(password, email)
+            .then(res => {
+                localStorage.setItem('jwt', res.jwt)
+                setLoggedIn(true);
+                navigate("/")
+            })
+            .catch(err => {
+                onError();
+                console.log(err);
+            });
+    }
+
+    function handleRegister(password, email) {
+        auth.register(password, email)
+            .then(() => {
+                navigate("/sign-in");
+                onRegister();
+            })
+            .catch(err => {
+                onError();
+                console.log(err);
             });
     }
 
     return (
         <CurrentUserContext.Provider value={currentUser}>
             <div className="page">
-                <Header />
+                <Header
+                //email={email} 
+                />
                 <Routes>
-                    <Route path="/" element={
-                        <ProtectedRoute
-                            element={Main}
-                            cards={cards}
-                            loggedIn={loggedIn}
-                            onEditProfile={handleEditProfileClick}
-                            onEditAvatar={handleEditAvatarClick}
-                            onAddPlace={handleAddPlaceClick}
-                            onCardClick={handleCardClick}
-                            onCardLike={handleCardLike}
-                            onCardDelete={handleCardDelete}
-                        />
-                    } />
                     <Route
-                        path="/sign-up"
-                        element={<Register />}
+                        path="/"
+                        element={
+                            <ProtectedRoute
+                                element={Main}
+                                cards={cards}
+                                loggedIn={loggedIn}
+                                onEditProfile={handleEditProfileClick}
+                                onEditAvatar={handleEditAvatarClick}
+                                onAddPlace={handleAddPlaceClick}
+                                onCardClick={handleCardClick}
+                                onCardLike={handleCardLike}
+                                onCardDelete={handleCardDelete}
+                            />
+                        }
                     />
-                    <Route
-                        path="/sign-in"
-                        element={<Login />}
-                    />
+                    <Route path="/sign-up" element={<Register onRegister={handleRegister} />} />
+                    <Route path="/sign-in" element={<Login onLogin={handleLogin} />} />
                     <Route
                         path="*"
                         element={
-                            <Navigate to={loggedIn ? "/" : "/sign-in"} />}
+                            <Navigate to={loggedIn ? "/" : "/sign-in"} />
+                        }
                     />
-
                 </Routes>
                 {loggedIn && <Footer />}
 
@@ -155,15 +209,13 @@ function App() {
                     onUpdateAvatar={handleUpdateAvatar}
                 />
 
-                <AddPlacePopup isOpen={isAddPlacePopupOpen}
+                <AddPlacePopup
+                    isOpen={isAddPlacePopupOpen}
                     onClose={closeAllPopups}
                     onAddPlace={handleAddPlaceSubmit}
                 />
 
-                <ImagePopup
-                    card={selectedCard}
-                    onClose={closeAllPopups}>
-                </ImagePopup>
+                <ImagePopup card={selectedCard} onClose={closeAllPopups} />
             </div>
         </CurrentUserContext.Provider>
     );

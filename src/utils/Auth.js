@@ -1,55 +1,43 @@
-class Auth {
-  constructor() {
-    this.baseUrl = "https://auth.nomoreparties.co";
-    console.log(this.baseUrl);
-    this.headers = {
-      authorization: '84f0b731-4685-4b31-9185-d609841667ca',
-      'Content-Type': 'application/json'
-    };
-  }
+export const BASE_URL = "https://auth.nomoreparties.co";
 
-  _checkResponse(res) {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
+function checkResponse(res) {
+  if (res.ok) {
+    return res.json();
   }
-
-  _request(url, options) {
-    return fetch(url, options)
-      .then(this._checkResponse);
-  }
-
-  register(email, password) {
-    return this._request(`${this.baseUrl}/signup`, {
-      method: 'POST',
-      headers: this.headers,
-      body: JSON.stringify({ email, password })
-    })
-      .then((response) => {
-        return response;
-      })
-      .catch((err) => console.log(err));
-  }
-
-  login(email, password) {
-    return this._request(`${this.baseUrl}/signin`, {
-      method: 'POST',
-      headers: this.headers,
-      body: JSON.stringify({ email, password })
-    });
-  }
-
-  checkToken(token) {
-    return this._request(`${this.baseUrl}/users/me`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      }
-    });
-  }
+  return res.text().then(errorMessage => {
+    throw new Error(`Ошибка: ${res.status} - ${errorMessage}`);
+  });
 }
 
-export default Auth;
+export const register = (email, password) => {
+  return fetch(`${BASE_URL}/signup`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email, password })
+  })
+    .then(response => checkResponse(response));
+};
+
+export const authorize = (email, password) => {
+  return fetch(`${BASE_URL}/signin`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email, password })
+  })
+    .then(response => checkResponse(response));
+};
+
+export const checkToken = (jwt) => {
+  return fetch(`${BASE_URL}/users/me`, {
+    method: 'GET',
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${ jwt }` 
+    } 
+  }) 
+    .then(response => checkResponse(response)); 
+};

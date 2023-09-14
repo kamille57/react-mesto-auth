@@ -139,7 +139,7 @@ function App() {
         if (token) {
             auth.checkToken(token)
                 .then((res) => {
-                    setEmail(res.email);
+                    setEmail(res.data.email);
                     setLoggedIn(true);
                     navigate("/");
                 })
@@ -150,8 +150,10 @@ function App() {
     function handleLogin(email, password) {
         auth.authorize(email, password)
             .then(res => {
-                localStorage.setItem('token', res.token)
+                localStorage.setItem('token', res.token);
                 navigate("/")
+                checkContent();
+
             })
             .catch(err => {
                 onError();
@@ -162,6 +164,8 @@ function App() {
     function handleRegister(email, password) {
         auth.register(email, password)
             .then(() => {
+                console.log({ email });
+
                 navigate("/sign-in");
                 onRegister();
             })

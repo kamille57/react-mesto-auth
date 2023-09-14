@@ -7,7 +7,6 @@ function Header({ email }) {
   const navigate = useNavigate();
 
   function handleExit() {
-    console.log('Выход')
     localStorage.removeItem('token');
     navigate('/sign-in');
   }

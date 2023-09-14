@@ -164,8 +164,6 @@ function App() {
     function handleRegister(email, password) {
         auth.register(email, password)
             .then(() => {
-                setEmail(email);
-                setLoggedIn(false);
                 navigate("/sign-in");
                 onRegister();
             })

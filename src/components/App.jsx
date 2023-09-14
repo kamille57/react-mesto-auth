@@ -151,8 +151,6 @@ function App() {
         auth.authorize(email, password)
             .then(res => {
                 localStorage.setItem('token', res.token)
-                setEmail(email);
-                setLoggedIn(true);
                 navigate("/")
             })
             .catch(err => {
@@ -211,7 +209,7 @@ function App() {
                     isOpen={isToolTipSuccessOpen}
                     onClose={closeAllPopups}
                 />
-                 <ToolTipFail
+                <ToolTipFail
                     isOpen={isToolTipFailOpen}
                     onClose={closeAllPopups}
                 />

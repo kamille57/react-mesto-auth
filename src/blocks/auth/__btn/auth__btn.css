@@ -12,3 +12,14 @@
     background-color: #fff;
     cursor: pointer;
 }
+
+
+@media screen and (max-width: 620px) {
+    .auth__btn {
+      line-height: 17px;
+      font-size: 14px;
+      width: 260px;
+      margin: 15px;
+      height: 46px;
+    }
+  }

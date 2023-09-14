@@ -9,3 +9,10 @@
     height: 100%;
     width: 358px;
 }
+
+@media screen and (max-width: 620px) {
+    .auth__form {
+        width: 260px;
+        padding: 25px 22px 0;
+    }
+}

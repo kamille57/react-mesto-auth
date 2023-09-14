@@ -13,8 +13,11 @@
     line-height: normal;
     color: #ccc;
     background-color: black;
+    outline: none;
 }
 
-.login__input::placeholder {
+.auth__input::placeholder {
     color: #ccc;
+    border: none;
+    outline: none;
   }
